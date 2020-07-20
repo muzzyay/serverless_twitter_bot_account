@@ -77,7 +77,7 @@ async function selectRandomCategory(){
             return res.data.filter(category=>!unwantedCategories.includes(category));
           });
   
-          return categories[parseInt(Math.random()*categories.length)];
+          return categories[Math.floor(Math.random()*categories.length)];
   
       }catch(err){
           return err;
