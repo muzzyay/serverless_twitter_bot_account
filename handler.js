@@ -43,7 +43,7 @@ async function fetchJoke(category='food'){
         "headers":{
         "content-type":"application/octet-stream",
         "x-rapidapi-host":"matchilling-chuck-norris-jokes-v1.p.rapidapi.com",
-        "x-rapidapi-key":"778179837amsh3ac9e28fdfd5476p11802ejsneca065d0c5bf",
+        "x-rapidapi-key":process.env.RAPID_API_KEY,
         "accept":"application/json",
         "useQueryString":true
         },
