@@ -15,18 +15,45 @@ module.exports.hello = async (event, context, cb) => {
 
     try{
 
+        const last100Tweets = await client.get("statuses/user_timeline", {
+            screen_name: 'DosageOfJokes',
+            count:100,
+            tweet_mode: 'extended'
+        }).then(tweets=>tweets.data.map(tweet=>tweet.full_text.split('\n\n')[0]));
 
-        const category = await selectRandomCategory();
-        const joke = await fetchJoke(category);
+        let tweetNotAcceptable = true;
+        let newTweet = '';
+
+        while(tweetNotAcceptable){
+            const category = await selectRandomCategory();
+            const joke = await fetchJoke(category);
+            const hashtags = `\n\n#jokes #funny #ChuckNorris #${category}jokes`;
+
+            const tweet = joke.trim()+hashtags;
+
+            if(!last100Tweets.includes(joke.trim()) && tweet.length<=280){
+                tweetNotAcceptable=false;
+                newTweet = tweet;
+            }
+        }
+
+
+        
 
         const response = await client.post("statuses/update", {
-            status: joke.trim()+ `\n\n#jokes #funny #ChuckNorris #${category}jokes`,
+            status: newTweet,
             
         });
+
+        console.log(response);
 
         return response;
 
     }catch(err){
+
+        console.log({
+            error: err
+        });
         return {
             error: err
         }
@@ -42,8 +69,6 @@ async function fetchJoke(category='food'){
         "url":`${process.env.JOKE_API_URL}/random`,
         "headers":{
         "content-type":"application/octet-stream",
-        "x-rapidapi-host":"matchilling-chuck-norris-jokes-v1.p.rapidapi.com",
-        "x-rapidapi-key":process.env.RAPID_API_KEY,
         "accept":"application/json",
         "useQueryString":true
         },
@@ -66,8 +91,6 @@ async function selectRandomCategory(){
           "url":`${process.env.JOKE_API_URL}/categories`,
           "headers":{
           "content-type":"application/octet-stream",
-          "x-rapidapi-host":"matchilling-chuck-norris-jokes-v1.p.rapidapi.com",
-          "x-rapidapi-key":process.env.RAPID_API_KEY,
           "accept":"application/json",
           "useQueryString":true
           }
