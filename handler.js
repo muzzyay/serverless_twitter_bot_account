@@ -31,7 +31,7 @@ module.exports.hello = async (event, context, cb) => {
 
             const tweet = joke.trim()+hashtags;
 
-            if(!last100Tweets.includes(joke.trim()) && tweet.length<=280){
+            if(!tweet.includes(process.env.unwantedWord) && !last100Tweets.includes(joke.trim()) && tweet.length<=280){
                 tweetNotAcceptable=false;
                 newTweet = tweet;
             }
